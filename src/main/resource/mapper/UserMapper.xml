@@ -2,9 +2,8 @@
 <!DOCTYPE mapper
 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper  namespace="csdnMybatis">
-	<select id="getWebsiteById" resultType="csdnMybatis.Twebsites">
-		SELECT * FROM websites WHERE id = #{id};
+<mapper  namespace="xunner.mapper.UserMapper">
+	<select id="getUserById" resultType="xunner.bean.User">
+		SELECT * FROM users WHERE id = #{id};
 	</select>
-
 </mapper>
