@@ -27,7 +27,7 @@ public class Main {
 			try (SqlSession session = sqlSessionFactory.openSession()) {
 				UserMapper userMapper = session.getMapper(UserMapper.class);
 
-				User user = userMapper.getUserById(1);
+				User user = userMapper.getById(1);
 				if (user == null) {
 					System.out.println("not found");
 				} else {

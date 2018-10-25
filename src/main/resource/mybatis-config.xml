@@ -27,7 +27,11 @@
 	</environments>
 
 	<mappers>
+		<mapper resource="mapper/CallExpenseMapper.xml"/>
+		<mapper resource="mapper/DataExpenseMapper.xml"/>
+		<mapper resource="mapper/MessageExpenseMapper.xml"/>
+		<mapper resource="mapper/OrderMapper.xml"/>
+		<mapper resource="mapper/PlanMapper.xml"/>
 		<mapper resource="mapper/UserMapper.xml"/>
-		<!--<package name="mapper"/>-->
 	</mappers>
 </configuration>
