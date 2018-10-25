@@ -6,9 +6,14 @@
 <configuration>
 
 	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
 		<!--当返回行的所有列都是空时，MyBatis默认返回null-->
 		<setting name="returnInstanceForEmptyRow" value="true"/>
 	</settings>
+
+	<typeHandlers>
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="xunner.enums.OrderState"/>
+	</typeHandlers>
 
 	<environments default="development">
 

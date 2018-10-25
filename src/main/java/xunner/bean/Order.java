@@ -1,6 +1,7 @@
 package xunner.bean;
 
 import lombok.Data;
+import xunner.enums.OrderState;
 
 import java.time.LocalDate;
 
@@ -24,6 +25,6 @@ public class Order {
 	/** 订购日期（年月） */
 	private LocalDate date;
 
-	/** 退订标记 */
-	private boolean isCanceled;
+	/** 订单状态 */
+	private OrderState state;
 }
