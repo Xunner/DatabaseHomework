@@ -3,7 +3,7 @@ package xunner.bean;
 import lombok.Data;
 
 /**
- * 用户实体类
+ * 用户
  * <br>
  * created on 2018/10/24
  *
@@ -11,7 +11,11 @@ import lombok.Data;
  **/
 @Data
 public class User {
-	private int id;
+	private int uid;
+
+	/** 手机号 */
 	private String number;
+
+	/** 账户余额 */
 	private double balance;
 }

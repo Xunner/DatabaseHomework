@@ -10,5 +10,5 @@ import xunner.bean.User;
  * @author 巽
  **/
 public interface UserMapper {
-	User getUserById(int id);
+	User getUserById(int uid);
 }
