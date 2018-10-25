@@ -31,7 +31,7 @@ public class Main {
 				if (user == null) {
 					System.out.println("not found");
 				} else {
-					System.out.println(user.getId() + ", " + user.getNumber() + ", " + user.getBalance());
+					System.out.println(user.getUserId() + ", " + user.getNumber() + ", " + user.getBalance());
 				}
 
 				session.commit();

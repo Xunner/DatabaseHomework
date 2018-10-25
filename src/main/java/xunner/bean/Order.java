@@ -13,15 +13,17 @@ import java.time.LocalDate;
  **/
 @Data
 public class Order {
+	private int orderId;
+
 	/** 用户id */
-	private int uid;
+	private int userId;
 
 	/** 套餐id */
-	private int pid;
+	private int planId;
 
 	/** 订购日期（年月） */
 	private LocalDate date;
 
 	/** 退订标记 */
-	private boolean cancel;
+	private boolean isCanceled;
 }

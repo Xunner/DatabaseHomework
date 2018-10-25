@@ -4,6 +4,6 @@
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper  namespace="xunner.mapper.UserMapper">
 	<select id="getUserById" resultType="xunner.bean.User">
-		SELECT * FROM users WHERE uid = #{uid};
+		SELECT * FROM users WHERE uid = #{userId};
 	</select>
 </mapper>

@@ -11,7 +11,7 @@ import lombok.Data;
  **/
 @Data
 public class Plan {
-	private int pid;
+	private int planId;
 
 	/** 套餐名称 */
 	private String name;
@@ -25,9 +25,12 @@ public class Plan {
 	/** 短信（条） */
 	private int message;
 
-	/** 流量（M） */
-	private double data;
+	/** 本地流量（M） */
+	private double localData;
+
+	/** 国内流量（M） */
+	private double nationalData;
 
 	/** 废除标记 */
-	private boolean abolished;
+	private boolean isAbolished;
 }

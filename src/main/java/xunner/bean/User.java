@@ -11,7 +11,7 @@ import lombok.Data;
  **/
 @Data
 public class User {
-	private int uid;
+	private int userId;
 
 	/** 手机号 */
 	private String number;
