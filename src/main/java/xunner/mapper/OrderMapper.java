@@ -2,6 +2,9 @@ package xunner.mapper;
 
 import xunner.bean.Order;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
  * Order映射接口
  * <br>
@@ -11,4 +14,6 @@ import xunner.bean.Order;
  **/
 public interface OrderMapper {
 	Order getById(int orderId);
+
+	List<Order> getOrdersByUserIdAndDates(int userId, LocalDate startDate, LocalDate endDate);
 }

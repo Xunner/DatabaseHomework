@@ -8,5 +8,15 @@ package xunner.enums;
  * @author 巽
  **/
 public enum OrderState {
-	EFFECTIVE, INVALID_NEXT_MONTH, INVALID
+	EFFECTIVE("生效"), INVALID_NEXT_MONTH("次月失效"), INVALID("已失效");
+
+	private String value;
+
+	OrderState(String value) {
+		this.value = value;
+	}
+
+	public String getValue() {
+		return value;
+	}
 }

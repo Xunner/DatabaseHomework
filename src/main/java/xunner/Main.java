@@ -4,12 +4,16 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import xunner.bean.User;
-import xunner.mapper.UserMapper;
+import xunner.bean.Order;
+import xunner.bean.Plan;
+import xunner.mapper.OrderMapper;
+import xunner.mapper.PlanMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.List;
 
 /**
  * 调用演示类
@@ -22,18 +26,7 @@ public class Main {
 	private static SqlSessionFactory sqlSessionFactory;
 
 	public static void main(String[] args) {
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-			UserMapper userMapper = session.getMapper(UserMapper.class);
-
-			User user = userMapper.getById(1);
-			if (user == null) {
-				System.out.println("not found");
-			} else {
-				System.out.println("User: id = " + user.getUserId() + ", number = " + user.getNumber() + ", balance = " + user.getBalance());
-			}
-
-			session.commit();
-		}
+		searchUserOrders(1, LocalDate.of(2018, Month.JANUARY, 1), LocalDate.now());
 	}
 
 	/*
@@ -118,19 +111,32 @@ public class Main {
 	 *
 	 * @param userId 用户id
 	 */
-	private static void serachUserCurrentOrders(int userId) {
-		//TODO
+	private static void searchUserCurrentOrders(int userId) {
+		// TODO
 	}
 
 	/**
 	 * 查询用户时间段内订购的套餐
 	 *
 	 * @param userId    用户id
-	 * @param startDate 开始时间
-	 * @param endDate   结束时间
+	 * @param startDate 开始时间（年月）
+	 * @param endDate   结束时间（年月）
 	 */
-	private static void serachUserOrders(int userId, LocalDate startDate, LocalDate endDate) {
-		//TODO
+	private static void searchUserOrders(int userId, LocalDate startDate, LocalDate endDate) {
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+			PlanMapper planMapper = session.getMapper(PlanMapper.class);
+
+			List<Order> orders = orderMapper.getOrdersByUserIdAndDates(userId, startDate, endDate);
+			System.out.println("名称\t\t\t价格\t\t\t日期\t\t\t状态");
+			for (Order order : orders) {
+				Plan plan = planMapper.getById(order.getPlanId());
+				System.out.println(plan.getName() + "\t\t\t" + plan.getPrice() + "\t\t\t" + order.getDate() + "\t\t\t" + order.getState().getValue());
+				// TODO
+			}
+
+			session.commit();
+		}
 	}
 
 	static {
