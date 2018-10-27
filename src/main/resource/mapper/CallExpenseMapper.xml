@@ -6,4 +6,18 @@
 	<select id="getById" resultType="xunner.bean.CallExpense">
 		SELECT * FROM call_expenses WHERE call_expense_id = #{callExpenseId};
 	</select>
+
+	<select id="sumMinutesInOrder" resultType="double">
+		SELECT ifnull(sum(minutes), 0)
+		FROM call_expenses
+		WHERE order_id = #{orderId};
+	</select>
+
+	<select id="sumMinutesWithoutOrder" resultType="double">
+		SELECT ifnull(sum(minutes), 0)
+		FROM call_expenses
+		WHERE user_id = #{userId}
+		  and order_id is null
+		  and time between #{startTime} and #{endTime};
+	</select>
 </mapper>

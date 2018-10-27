@@ -2,6 +2,8 @@ package xunner.mapper;
 
 import xunner.bean.CallExpense;
 
+import java.time.LocalDateTime;
+
 /**
  * CallExpense映射接口
  * <br>
@@ -11,4 +13,8 @@ import xunner.bean.CallExpense;
  **/
 public interface CallExpenseMapper {
 	CallExpense getById(int callExpenseId);
+
+	double sumMinutesInOrder(int orderId);
+
+	double sumMinutesWithoutOrder(int userId, LocalDateTime startTime, LocalDateTime endTime);
 }

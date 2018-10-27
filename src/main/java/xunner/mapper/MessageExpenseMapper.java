@@ -2,6 +2,8 @@ package xunner.mapper;
 
 import xunner.bean.MessageExpense;
 
+import java.time.LocalDateTime;
+
 /**
  * MessageExpense映射接口
  * <br>
@@ -11,4 +13,8 @@ import xunner.bean.MessageExpense;
  **/
 public interface MessageExpenseMapper {
 	MessageExpense getById(int messageExpenseId);
+
+	int countMessagesInOrder(int orderId);
+
+	int countMessageWithoutOrder(int userId, LocalDateTime startTime, LocalDateTime endTime);
 }

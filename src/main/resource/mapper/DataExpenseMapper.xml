@@ -2,8 +2,42 @@
 <!DOCTYPE mapper
 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper  namespace="xunner.mapper.DataExpenseMapper">
+<mapper namespace="xunner.mapper.DataExpenseMapper">
 	<select id="getById" resultType="xunner.bean.DataExpense">
-		SELECT * FROM data_expenses WHERE data_expense_id = #{dataExpenseId};
+		SELECT *
+		FROM data_expenses
+		WHERE data_expense_id = #{dataExpenseId};
+	</select>
+
+	<select id="sumLocalDataInOrder" resultType="double">
+		SELECT ifnull(sum(data), 0)
+		FROM data_expenses
+		WHERE order_id = #{orderId}
+		  and is_local = 1;
+	</select>
+
+	<select id="sumNationalDataInOrder" resultType="double">
+		SELECT ifnull(sum(data), 0)
+		FROM data_expenses
+		WHERE order_id = #{orderId}
+		  and is_local = 0;
+	</select>
+
+	<select id="sumLocalDataWithoutOrder" resultType="double">
+		SELECT ifnull(sum(data), 0)
+		FROM data_expenses
+		WHERE user_id = #{userId}
+		  and order_id is null
+		  and is_local = 1
+		  and time between #{startTime} and #{endTime};
+	</select>
+
+	<select id="sumNationalDataWithoutOrder" resultType="double">
+		SELECT ifnull(sum(data), 0)
+		FROM data_expenses
+		WHERE user_id = #{userId}
+		  and order_id is null
+		  and is_local = 0
+		  and time between #{startTime} and #{endTime};
 	</select>
 </mapper>

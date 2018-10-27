@@ -19,4 +19,69 @@
 		SET state = #{state}
 		WHERE order_id = #{orderId}
 	</update>
+
+	<select id="getValidOrdersMessages" resultMap="validOrdersMessages">
+		SELECT p.plan_id AS "plan_id",
+		       name,
+		       price,
+		       minutes,
+		       message,
+		       local_data,
+		       national_data,
+		       is_abolished,
+		       state,
+		       order_id
+		FROM orders o,
+		     plans p
+		WHERE o.user_id = #{arg0}
+		  AND state != 2
+		  AND o.plan_id = p.plan_id
+		  AND date BETWEEN #{arg1} AND #{arg2}
+	</select>
+	<resultMap id="validOrdersMessages" type="map">
+		<result property="state" column="state" javaType="OrderState"/>
+		<result property="orderId" column="order_id"/>
+		<association property="plan" javaType="Plan">
+			<id property="planId" column="plan_id"/>
+			<result property="name" column="name"/>
+			<result property="price" column="price"/>
+			<result property="minutes" column="minutes"/>
+			<result property="message" column="message"/>
+			<result property="localData" column="local_data"/>
+			<result property="nationalData" column="national_data"/>
+			<result property="isAbolished" column="is_abolished"/>
+		</association>
+	</resultMap>
+
+	<select id="getOrdersByUserIdAndDates" resultMap="OrdersByUserIdAndDates">
+		SELECT p.plan_id AS "plan_id",
+		       name,
+		       price,
+		       minutes,
+		       message,
+		       local_data,
+		       national_data,
+		       is_abolished,
+		       state,
+		       date
+		FROM orders o,
+		     plans p
+		WHERE o.user_id = #{arg0}
+		  AND o.plan_id = p.plan_id
+		  AND date BETWEEN #{arg1} AND #{arg2}
+	</select>
+	<resultMap id="OrdersByUserIdAndDates" type="map">
+		<result property="state" column="state" javaType="OrderState"/>
+		<result property="date" column="date"/>
+		<association property="plan" javaType="Plan">
+			<id property="planId" column="plan_id"/>
+			<result property="name" column="name"/>
+			<result property="price" column="price"/>
+			<result property="minutes" column="minutes"/>
+			<result property="message" column="message"/>
+			<result property="localData" column="local_data"/>
+			<result property="nationalData" column="national_data"/>
+			<result property="isAbolished" column="is_abolished"/>
+		</association>
+	</resultMap>
 </mapper>

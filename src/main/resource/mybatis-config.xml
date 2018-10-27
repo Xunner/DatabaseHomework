@@ -12,6 +12,7 @@
 	</settings>
 
 	<typeAliases>
+		<typeAlias alias="OrderState" type="xunner.enums.OrderState"/>
 		<package name="xunner.bean"/>
 	</typeAliases>
 
