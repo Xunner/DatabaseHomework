@@ -2,8 +2,21 @@
 <!DOCTYPE mapper
 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper  namespace="xunner.mapper.OrderMapper">
+<mapper namespace="xunner.mapper.OrderMapper">
 	<select id="getById" resultType="xunner.bean.Order">
-		SELECT * FROM orders WHERE order_id = #{orderId};
+		SELECT *
+		FROM orders
+		WHERE order_id = #{orderId};
 	</select>
+
+	<insert id="add" useGeneratedKeys="true" keyProperty="order_id" parameterType="Order">
+		INSERT INTO orders (user_id, plan_id, date, state)
+		VALUES (#{userId}, #{planId}, #{date}, #{state})
+	</insert>
+
+	<update id="update" parameterType="Order">
+		UPDATE orders
+		SET state = #{state}
+		WHERE order_id = #{orderId}
+	</update>
 </mapper>

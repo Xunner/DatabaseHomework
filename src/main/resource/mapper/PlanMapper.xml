@@ -2,8 +2,15 @@
 <!DOCTYPE mapper
 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper  namespace="xunner.mapper.PlanMapper">
-	<select id="getById" resultType="xunner.bean.Plan">
-		SELECT * FROM plans WHERE plan_id = #{planId};
+<mapper namespace="xunner.mapper.PlanMapper">
+	<select id="getById" resultType="Plan">
+		SELECT *
+		FROM plans
+		WHERE plan_id = #{planId};
 	</select>
+
+	<insert id="add" useGeneratedKeys="true" keyProperty="plan_id" parameterType="Plan">
+		INSERT INTO plans (name, price, minutes, message, local_data, national_data, is_abolished)
+		VALUES (#{name}, #{price}, #{minutes}, #{message}, #{localData}, #{nationalData}, #{isAbolished})
+	</insert>
 </mapper>

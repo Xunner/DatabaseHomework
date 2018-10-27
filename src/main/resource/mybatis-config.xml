@@ -11,6 +11,10 @@
 		<setting name="returnInstanceForEmptyRow" value="true"/>
 	</settings>
 
+	<typeAliases>
+		<package name="xunner.bean"/>
+	</typeAliases>
+
 	<typeHandlers>
 		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="xunner.enums.OrderState"/>
 	</typeHandlers>
@@ -24,7 +28,7 @@
 			<dataSource type="POOLED">
 				<!--<property name="driver" value="com.mysql.jdbc.Driver"/>-->
 				<property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-				<property name="url" value="jdbc:mysql://localhost:3306/databasehomework?serverTimezone=UTC"/>
+				<property name="url" value="jdbc:mysql://localhost:3306/databasehomework?useSSL=false&amp;serverTimezone=UTC"/>
 				<property name="username" value="root"/>
 				<property name="password" value="admin"/>
 			</dataSource>

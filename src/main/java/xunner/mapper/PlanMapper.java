@@ -11,4 +11,6 @@ import xunner.bean.Plan;
  **/
 public interface PlanMapper {
 	Plan getById(int planId);
+
+	int add(Plan plan);
 }

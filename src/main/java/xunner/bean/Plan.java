@@ -1,6 +1,7 @@
 package xunner.bean;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 套餐
@@ -10,6 +11,7 @@ import lombok.Data;
  * @author 巽
  **/
 @Data
+@NoArgsConstructor
 public class Plan {
 	private int planId;
 
@@ -33,4 +35,14 @@ public class Plan {
 
 	/** 废除标记 */
 	private boolean isAbolished;
+
+	public Plan(String name, double price, double minutes, int message, double localData, double nationalData, boolean isAbolished) {
+		this.name = name;
+		this.price = price;
+		this.minutes = minutes;
+		this.message = message;
+		this.localData = localData;
+		this.nationalData = nationalData;
+		this.isAbolished = isAbolished;
+	}
 }

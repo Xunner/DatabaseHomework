@@ -1,18 +1,21 @@
 package xunner;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import xunner.bean.Order;
 import xunner.bean.Plan;
+import xunner.bean.User;
+import xunner.enums.OrderState;
 import xunner.mapper.OrderMapper;
 import xunner.mapper.PlanMapper;
+import xunner.mapper.UserMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 /**
@@ -26,7 +29,15 @@ public class Main {
 	private static SqlSessionFactory sqlSessionFactory;
 
 	public static void main(String[] args) {
-		searchUserOrders(1, LocalDate.of(2018, Month.JANUARY, 1), LocalDate.now());
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UserMapper userMapper = session.getMapper(UserMapper.class);
+			PlanMapper planMapper = session.getMapper(PlanMapper.class);
+			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+
+			subscribe(2, 1);
+
+			session.commit();
+		}
 	}
 
 	/*
@@ -77,23 +88,46 @@ public class Main {
 	}
 
 	/**
-	 * 退订套餐，立即生效
+	 * 退订套餐，立即生效。逻辑：
 	 *
-	 * @param userId  用户id
 	 * @param orderId 订单id
 	 */
-	private static void unsubscribeByNow(int userId, int orderId) {
-		//TODO
+	private static void unsubscribeByNow(int orderId) {
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+
+			Order order = orderMapper.getById(orderId);
+			if (order.getState() == OrderState.EFFECTIVE) {
+				order.setState(OrderState.INVALID);
+				orderMapper.update(order);
+				// TODO
+			} else {
+				System.out.println("订单已过期");
+			}
+
+			session.commit();
+		}
 	}
 
 	/**
 	 * 退订套餐，次月生效
 	 *
-	 * @param userId  用户id
 	 * @param orderId 订单id
 	 */
-	private static void unsubscribeNextMonth(int userId, int orderId) {
-		//TODO
+	private static void unsubscribeNextMonth(int orderId) {
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+
+			Order order = orderMapper.getById(orderId);
+			if (order.getState() == OrderState.EFFECTIVE) {
+				order.setState(OrderState.INVALID_NEXT_MONTH);
+				orderMapper.update(order);
+			} else {
+				System.out.println("订单已过期");
+			}
+
+			session.commit();
+		}
 	}
 
 	/**
@@ -103,7 +137,24 @@ public class Main {
 	 * @param planId 套餐id
 	 */
 	private static void subscribe(int userId, int planId) {
-		//TODO
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UserMapper userMapper = session.getMapper(UserMapper.class);
+			PlanMapper planMapper = session.getMapper(PlanMapper.class);
+
+			User user = userMapper.getById(userId);
+			Plan plan = planMapper.getById(planId);
+			if (user.getBalance() < plan.getPrice()) {
+				System.out.println("账户余额不足！");
+			} else {
+				OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+				orderMapper.add(new Order(userId, planId, LocalDate.now(), OrderState.EFFECTIVE));
+
+				user.setBalance(user.getBalance() - plan.getPrice());
+				userMapper.update(user);
+			}
+
+			session.commit();
+		}
 	}
 
 	/**

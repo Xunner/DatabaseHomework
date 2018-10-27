@@ -1,6 +1,7 @@
 package xunner.bean;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import xunner.enums.OrderState;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
  * @author 巽
  **/
 @Data
+@NoArgsConstructor
 public class Order {
 	private int orderId;
 
@@ -27,4 +29,11 @@ public class Order {
 
 	/** 订单状态 */
 	private OrderState state;
+
+	public Order(int userId, int planId, LocalDate date, OrderState state) {
+		this.userId = userId;
+		this.planId = planId;
+		this.date = date;
+		this.state = state;
+	}
 }

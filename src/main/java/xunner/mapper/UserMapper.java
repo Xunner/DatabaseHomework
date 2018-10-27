@@ -11,4 +11,14 @@ import xunner.bean.User;
  **/
 public interface UserMapper {
 	User getById(int userId);
+
+	int add(User user);
+
+	/**
+	 * 只能修改账户余额
+	 *
+	 * @param user 已修改的用户
+	 * @return 涉及行数
+	 */
+	int update(User user);
 }
