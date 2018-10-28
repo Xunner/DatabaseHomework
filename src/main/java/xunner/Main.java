@@ -36,70 +36,60 @@ public class Main {
 	private static SqlSessionFactory sqlSessionFactory;
 
 	public static void main(String[] args) {
-//		// 1. 订购：subscribe(用户id，套餐id)
-//		long startTime = System.currentTimeMillis();
-//		subscribe(1, 1);
-//		double time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("订购用时：" + time + "秒");
-//
-//		// 2. 退订（立即生效）：unsubscribeByNow(订单id)
-//		startTime = System.currentTimeMillis();
-//		unsubscribeByNow(1);
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("退订（立即生效）用时：" + time + "秒");
-//
-//		// 3. 退订（次月生效）：unsubscribeNextMonth(订单id)
-//		startTime = System.currentTimeMillis();
-//		unsubscribeNextMonth(1);
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("退订（次月生效）用时：" + time + "秒");
-//
-//		// 4. 查询套餐订购记录：searchUserOrders(用户id，开始时间，结束时间)
-//		startTime = System.currentTimeMillis();
-//		searchUserOrders(1, LocalDate.of(2017, Month.JANUARY, 1), LocalDate.now());
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("查询套餐订购记录用时：" + time + "秒");
-//
-//		// 5. 生成通话资费：generateCallExpense(用户id，通话时长/分钟)
-//		startTime = System.currentTimeMillis();
-//		generateCallExpense(1, 3.0);
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("生成通话资费用时：" + time + "秒");
-//
-//		// 6. 生成短信资费：generateMessageExpense(用户id)
-//		startTime = System.currentTimeMillis();
-//		generateMessageExpense(1);
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("生成短信资费用时：" + time + "秒");
-//
-//		// 7. 生成流量资费：generateDataExpense(用户id，流量大小/M，是否为本地流量)
-//		startTime = System.currentTimeMillis();
-//		generateDataExpense(1, 9.9, true);
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("生成流量资费用时：" + time + "秒");
-//
-//		// 8. 生成当月账单：generateMonthlyBill(用户id)
-//		startTime = System.currentTimeMillis();
-//		generateMonthlyBill(1);
-//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-//		System.out.println("生成月账单用时：" + time + "秒");
+		long startTime;
+		double time;
 
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
-			CallExpenseMapper callExpenseMapper = session.getMapper(CallExpenseMapper.class);
-			DataExpenseMapper dataExpenseMapper = session.getMapper(DataExpenseMapper.class);
-			MessageExpenseMapper messageExpenseMapper = session.getMapper(MessageExpenseMapper.class);
-			PlanMapper planMapper = session.getMapper(PlanMapper.class);
+		// 1. 订购：subscribe(用户id，套餐id)
+		startTime = System.currentTimeMillis();
+		subscribe(1, 1);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("订购用时：" + time + "秒");
 
-			planMapper.add(new Plan("本地流量套餐", 20, 0, 0, 2000, 0, false));
-			planMapper.add(new Plan("话费套餐", 20, 100, 0, 0, 0, false));
-			planMapper.add(new Plan("短信套餐", 10, 0, 200, 0, 0, false));
-			planMapper.add(new Plan("国内流量套餐", 30, 0, 0, 0, 2000, false));
-			planMapper.add(new Plan("无限流量套餐", 70, 0, 0, 22000, 10000, false));
-			planMapper.add(new Plan("联通新生豪华套餐", 36, 200, 200, 7000, 4000, false));
+		// 2. 退订（立即生效）：unsubscribeByNow(订单id)
+		startTime = System.currentTimeMillis();
+		unsubscribeByNow(3);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("退订（立即生效）用时：" + time + "秒");
 
-			session.commit();
-		}
+		// 3. 退订（次月生效）：unsubscribeNextMonth(订单id)
+		startTime = System.currentTimeMillis();
+		unsubscribeNextMonth(4);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("退订（次月生效）用时：" + time + "秒");
+
+		// 4. 查询套餐订购记录：searchUserOrders(用户id，开始时间，结束时间)
+		startTime = System.currentTimeMillis();
+		searchUserOrders(1, LocalDate.of(2018, Month.JANUARY, 1), LocalDate.now());
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("查询套餐订购记录用时：" + time + "秒");
+
+		// 5. 生成通话资费：generateCallExpense(用户id，通话时长/分钟)
+		startTime = System.currentTimeMillis();
+		generateCallExpense(1, 3.0);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("生成通话资费用时：" + time + "秒");
+
+		// 6. 生成短信资费：generateMessageExpense(用户id)
+		startTime = System.currentTimeMillis();
+		generateMessageExpense(1);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("生成短信资费用时：" + time + "秒");
+
+		// 7. 生成流量资费：generateDataExpense(用户id，流量大小/M，是否为本地流量)
+		startTime = System.currentTimeMillis();
+		generateDataExpense(1, 9.9, true);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("生成流量资费用时：" + time + "秒");
+
+		// 8. 生成当月账单：generateMonthlyBill(用户id)
+		startTime = System.currentTimeMillis();
+		generateMonthlyBill(1);
+		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+		System.out.println("生成月账单用时：" + time + "秒");
+
+//		DataGenerator.generatePlans(sqlSessionFactory);
+//		DataGenerator.generateUsers(sqlSessionFactory);
+//		DataGenerator.generateOrders(sqlSessionFactory);
 	}
 
 	/**
@@ -120,7 +110,7 @@ public class Main {
 			List<Map<String, Object>> results = orderMapper.getValidOrdersMessages(userId, firstDayOfMonth, lastDayOfMonth);
 			double sum = 0;
 
-			System.out.println("—————————————————————————————————————月账单—————————————————————————————————————");
+			System.out.println("———————————————————————————————————————月账单———————————————————————————————————————");
 			System.out.println("已订购套餐：");
 
 			for (Map result : results) {
@@ -135,10 +125,10 @@ public class Main {
 
 				System.out.println("\t名称: " + plan.getName()
 						+ ", 价格: " + plan.getPrice()
-						+ ", 时长(剩/总): " + minutesLeft + "/" + plan.getMinutes()
-						+ ", 短信(剩/总): " + messagesLeft + "/" + plan.getMessage()
-						+ ", 本地流量(剩/总): " + localDataLeft + "/" + plan.getLocalData()
-						+ ", 全国流量(剩/总): " + nationalDataLeft + "/" + plan.getNationalData()
+						+ (plan.getMinutes()==0 ? "" : ", 时长(剩/总): " + minutesLeft + "/" + plan.getMinutes())
+						+ (plan.getMessage()==0 ? "" : ", 短信(剩/总): " + messagesLeft + "/" + plan.getMessage())
+						+ (plan.getLocalData()==0 ? "" : ", 本地流量(剩/总): " + localDataLeft + "/" + plan.getLocalData())
+						+ (plan.getNationalData()==0 ? "" : ", 全国流量(剩/总): " + nationalDataLeft + "/" + plan.getNationalData())
 						+ ", 状态: " + state.getValue());
 			}
 			System.out.println();
@@ -157,7 +147,7 @@ public class Main {
 			System.out.println("套餐外全国流量：" + nationalData + "M，共计" + (5 * nationalData) + "元");
 			System.out.println();
 			System.out.println("总计：" + sum + "元");
-			System.out.println("—————————————————————————————————————————————————————————————————————————————");
+			System.out.println("—————————————————————————————————————————————————————————————————————————————————");
 
 			session.commit();
 		}
