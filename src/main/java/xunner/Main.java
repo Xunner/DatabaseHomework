@@ -13,8 +13,17 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
+
+/*
+	操作内容：
+	对某个用户进行套餐的查询（包括历史记录）、订购、退订（考虑立即生效和次月生效）操作
+	某个用户在通话情况下的资费生成
+	某个用户在使用流量情况下的资费生成
+	某个用户月账单的生成
+ */
 
 /**
  * 调用演示类
@@ -27,27 +36,71 @@ public class Main {
 	private static SqlSessionFactory sqlSessionFactory;
 
 	public static void main(String[] args) {
-//		try (SqlSession session = sqlSessionFactory.openSession()) {
-//			UserMapper userMapper = session.getMapper(UserMapper.class);
-//			PlanMapper planMapper = session.getMapper(PlanMapper.class);
-//			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+//		// 1. 订购：subscribe(用户id，套餐id)
+//		long startTime = System.currentTimeMillis();
+//		subscribe(1, 1);
+//		double time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("订购用时：" + time + "秒");
 //
-//			LocalDate today = LocalDate.now();
-//			List<Map<String, Object>> ret = orderMapper.getValidOrdersMessages(1, LocalDate.of(today.getYear(), today.getMonth(), 1), LocalDate.of(today.getYear(), today.getMonth(), today.getDayOfMonth()));
-//			System.out.println(ret);
+//		// 2. 退订（立即生效）：unsubscribeByNow(订单id)
+//		startTime = System.currentTimeMillis();
+//		unsubscribeByNow(1);
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("退订（立即生效）用时：" + time + "秒");
 //
-//			session.commit();
-//		}
+//		// 3. 退订（次月生效）：unsubscribeNextMonth(订单id)
+//		startTime = System.currentTimeMillis();
+//		unsubscribeNextMonth(1);
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("退订（次月生效）用时：" + time + "秒");
+//
+//		// 4. 查询套餐订购记录：searchUserOrders(用户id，开始时间，结束时间)
+//		startTime = System.currentTimeMillis();
+//		searchUserOrders(1, LocalDate.of(2017, Month.JANUARY, 1), LocalDate.now());
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("查询套餐订购记录用时：" + time + "秒");
+//
+//		// 5. 生成通话资费：generateCallExpense(用户id，通话时长/分钟)
+//		startTime = System.currentTimeMillis();
+//		generateCallExpense(1, 3.0);
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("生成通话资费用时：" + time + "秒");
+//
+//		// 6. 生成短信资费：generateMessageExpense(用户id)
+//		startTime = System.currentTimeMillis();
+//		generateMessageExpense(1);
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("生成短信资费用时：" + time + "秒");
+//
+//		// 7. 生成流量资费：generateDataExpense(用户id，流量大小/M，是否为本地流量)
+//		startTime = System.currentTimeMillis();
+//		generateDataExpense(1, 9.9, true);
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("生成流量资费用时：" + time + "秒");
+//
+//		// 8. 生成当月账单：generateMonthlyBill(用户id)
+//		startTime = System.currentTimeMillis();
+//		generateMonthlyBill(1);
+//		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
+//		System.out.println("生成月账单用时：" + time + "秒");
 
-		generateMonthlyBill(1);
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+			CallExpenseMapper callExpenseMapper = session.getMapper(CallExpenseMapper.class);
+			DataExpenseMapper dataExpenseMapper = session.getMapper(DataExpenseMapper.class);
+			MessageExpenseMapper messageExpenseMapper = session.getMapper(MessageExpenseMapper.class);
+			PlanMapper planMapper = session.getMapper(PlanMapper.class);
+
+			planMapper.add(new Plan("本地流量套餐", 20, 0, 0, 2000, 0, false));
+			planMapper.add(new Plan("话费套餐", 20, 100, 0, 0, 0, false));
+			planMapper.add(new Plan("短信套餐", 10, 0, 200, 0, 0, false));
+			planMapper.add(new Plan("国内流量套餐", 30, 0, 0, 0, 2000, false));
+			planMapper.add(new Plan("无限流量套餐", 70, 0, 0, 22000, 10000, false));
+			planMapper.add(new Plan("联通新生豪华套餐", 36, 200, 200, 7000, 4000, false));
+
+			session.commit();
+		}
 	}
-
-	/*
-		对某个用户进行套餐的查询（包括历史记录）、订购、退订（考虑立即生效和次月生效）操作
-		某个用户在通话情况下的资费生成
-		某个用户在使用流量情况下的资费生成
-		某个用户月账单的生成
-	 */
 
 	/**
 	 * 生成月账单
@@ -97,6 +150,7 @@ public class Main {
 			double localData = dataExpenseMapper.sumDataWithoutOrder(userId, true, firstTimeOfMonth, lastTimeOfMonth);
 			double nationalData = dataExpenseMapper.sumDataWithoutOrder(userId, false, firstTimeOfMonth, lastTimeOfMonth);
 
+			// 套餐外通话0.5元/分钟，短信0.1元/条，本地流量2元/M，全国流量5元/M
 			System.out.println("套餐外通话时长：" + minutes + "分钟，共计" + (0.5 * minutes) + "元");
 			System.out.println("套餐外短信：" + message + "条，共计" + (0.1 * message) + "元");
 			System.out.println("套餐外本地流量：" + localData + "M，共计" + (2 * localData) + "元");
@@ -126,27 +180,35 @@ public class Main {
 					LocalDate.of(today.getYear(), today.getMonth(), 1),
 					LocalDate.of(today.getYear(), today.getMonth(), today.getDayOfMonth()));
 			double left = data;
-			for (Map result : results) {
+			for (Map result : results) {    // 查询有无对应套餐流量可用
 				int orderId = (int) result.get("orderId");
 				double dataTotal = (double) result.get((isLocal ? "localData" : "nationalData"));
 				double dataLeft = dataTotal - dataExpenseMapper.sumDataInOrder(orderId, isLocal);
 				if (dataLeft > 0) {
 					double dataToWrite = Math.min(dataLeft, left);
-					dataExpenseMapper.add(new DataExpense(userId, orderId, LocalDateTime.now(), dataToWrite, isLocal, 0));
+					DataExpense dataExpense = new DataExpense(userId, orderId, LocalDateTime.now(), dataToWrite, isLocal, 0);
+					dataExpenseMapper.add(dataExpense);
+
+					System.out.println("生成一笔流量资费：" + dataExpense);
+
 					left -= dataToWrite;
 					if (left <= 0) {
 						break;
 					}
 				}
 			}
-			if (left != 0 && isLocal) { // 本地流量套餐用尽：查询可用的全国流量套餐
+			if (left != 0 && isLocal) { // 若本地流量套餐用尽，本地流量找不到可用套餐：查询可用的全国流量套餐
 				for (Map result : results) {
 					int orderId = (int) result.get("orderId");
 					double dataTotal = (double) result.get(("nationalData"));
 					double dataLeft = dataTotal - dataExpenseMapper.sumDataInOrder(orderId, false);
 					if (dataLeft > 0) {
 						double dataToWrite = Math.min(dataLeft, left);
-						dataExpenseMapper.add(new DataExpense(userId, orderId, LocalDateTime.now(), dataToWrite, false, 0));
+						DataExpense dataExpense = new DataExpense(userId, orderId, LocalDateTime.now(), dataToWrite, false, 0);
+						dataExpenseMapper.add(dataExpense);
+
+						System.out.println("生成一笔流量资费：" + dataExpense);
+
 						left -= dataToWrite;
 						if (left <= 0) {
 							break;
@@ -156,7 +218,10 @@ public class Main {
 			}
 			if (left != 0) {
 				// 本地2元/M，全国5元/M
-				dataExpenseMapper.add(new DataExpense(userId, null, LocalDateTime.now(), left, isLocal, (isLocal ? 2 : 5) * left));
+				DataExpense dataExpense = new DataExpense(userId, null, LocalDateTime.now(), left, isLocal, (isLocal ? 2 : 5) * left);
+				dataExpenseMapper.add(dataExpense);
+
+				System.out.println("生成一笔流量资费：" + dataExpense);
 			}
 
 			session.commit();
@@ -184,13 +249,20 @@ public class Main {
 				int messagesLeft = message - messageExpenseMapper.countMessagesInOrder(orderId);
 				if (messagesLeft > 0) {
 					found = true;
-					messageExpenseMapper.add(new MessageExpense(userId, orderId, LocalDateTime.now(), 0));
+					MessageExpense messageExpense = new MessageExpense(userId, orderId, LocalDateTime.now(), 0);
+					messageExpenseMapper.add(messageExpense);
+
+					System.out.println("生成一笔短信资费：" + messageExpense);
+
 					break;
 				}
 			}
 			if (!found) {
 				// 0.1元/条
-				messageExpenseMapper.add(new MessageExpense(userId, null, LocalDateTime.now(), 0.1));
+				MessageExpense messageExpense = new MessageExpense(userId, null, LocalDateTime.now(), 0.1);
+				messageExpenseMapper.add(messageExpense);
+
+				System.out.println("生成一笔短信资费：" + messageExpense);
 			}
 
 			session.commit();
@@ -219,7 +291,11 @@ public class Main {
 				double minutesLeft = minutesTotal - callExpenseMapper.sumMinutesInOrder(orderId);
 				if (minutesLeft > 0) {
 					double minuteToWrite = Math.min(minutesLeft, left);
-					callExpenseMapper.add(new CallExpense(userId, orderId, LocalDateTime.now(), minuteToWrite, 0));
+					CallExpense callExpense = new CallExpense(userId, orderId, LocalDateTime.now(), minuteToWrite, 0);
+					callExpenseMapper.add(callExpense);
+
+					System.out.println("生成一笔通话资费：" + callExpense);
+
 					left -= minuteToWrite;
 					if (left <= 0) {
 						break;
@@ -228,7 +304,11 @@ public class Main {
 			}
 			if (left != 0) {
 				// 0.5元/分钟
-				callExpenseMapper.add(new CallExpense(userId, null, LocalDateTime.now(), left, 0.5 * left));
+				CallExpense callExpense = new CallExpense(userId, null, LocalDateTime.now(), left, 0.5 * left);
+				callExpenseMapper.add(callExpense);
+
+				System.out.println("生成一笔通话资费：" + callExpense);
+
 			}
 
 			session.commit();
@@ -250,6 +330,8 @@ public class Main {
 					order.getDate().getYear() == today.getYear() && order.getDate().getMonth() == today.getMonth()) {
 				order.setState(OrderState.INVALID);
 				orderMapper.update(order);
+
+				System.out.println("退订成功：" + order);
 			} else {
 				System.out.println("订单已失效，退订失败");
 			}
@@ -273,6 +355,8 @@ public class Main {
 					order.getDate().getYear() == today.getYear() && order.getDate().getMonth() == today.getMonth()) {
 				order.setState(OrderState.INVALID_NEXT_MONTH);
 				orderMapper.update(order);
+
+				System.out.println("退订成功：" + order);
 			} else {
 				System.out.println("订单已失效，退订失败");
 			}
@@ -298,10 +382,13 @@ public class Main {
 				System.out.println("账户余额不足！");
 			} else {
 				OrderMapper orderMapper = session.getMapper(OrderMapper.class);
-				orderMapper.add(new Order(userId, planId, LocalDate.now(), OrderState.EFFECTIVE));
+				Order order = new Order(userId, planId, LocalDate.now(), OrderState.EFFECTIVE);
+				orderMapper.add(order);
 
 				user.setBalance(user.getBalance() - plan.getPrice());
 				userMapper.update(user);
+
+				System.out.println("订购成功：" + order);
 			}
 
 			session.commit();
@@ -320,7 +407,7 @@ public class Main {
 			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
 
 			List<Map<String, Object>> results = orderMapper.getOrdersByUserIdAndDates(userId, startDate, endDate);
-			System.out.println("————————————————————————————————历史订购套餐信息————————————————————————————————");
+			System.out.println("————————————————————————————————套餐订购记录————————————————————————————————");
 			for (Map result : results) {
 				OrderState state = (OrderState) result.get("state");
 				LocalDate date = (LocalDate) result.get("date");
@@ -330,7 +417,7 @@ public class Main {
 						+ ", 日期: " + date
 						+ ", 状态: " + state.getValue());
 			}
-			System.out.println("————————————————————————————————————————————————————————————————————————");
+			System.out.println("——————————————————————————————————————————————————————————————————————");
 
 			session.commit();
 		}

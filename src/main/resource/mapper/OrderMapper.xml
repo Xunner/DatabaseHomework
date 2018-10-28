@@ -31,11 +31,10 @@
 		       is_abolished,
 		       state,
 		       order_id
-		FROM orders o,
-		     plans p
+		FROM plans p
+			     inner join orders o on p.plan_id = o.plan_id
 		WHERE o.user_id = #{arg0}
 		  AND state != 2
-		  AND o.plan_id = p.plan_id
 		  AND date BETWEEN #{arg1} AND #{arg2}
 	</select>
 	<resultMap id="validOrdersMessages" type="map">
@@ -87,7 +86,8 @@
 
 	<select id="getValidOrdersIdAndTotal" resultMap="validOrdersIdAndTotal">
 		select order_id, minutes, message, local_data, national_data
-		from orders, plans
+		from orders,
+		     plans
 		where user_id = #{arg0}
 		  and orders.plan_id = plans.plan_id
 		  and state != 2
