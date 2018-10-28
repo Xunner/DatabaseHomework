@@ -17,4 +17,6 @@ public interface CallExpenseMapper {
 	double sumMinutesInOrder(int orderId);
 
 	double sumMinutesWithoutOrder(int userId, LocalDateTime startTime, LocalDateTime endTime);
+
+	int add(CallExpense callExpense);
 }

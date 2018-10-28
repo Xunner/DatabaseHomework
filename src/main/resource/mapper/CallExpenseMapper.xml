@@ -16,8 +16,13 @@
 	<select id="sumMinutesWithoutOrder" resultType="double">
 		SELECT ifnull(sum(minutes), 0)
 		FROM call_expenses
-		WHERE user_id = #{userId}
+		WHERE user_id = #{arg0}
 		  and order_id is null
-		  and time between #{startTime} and #{endTime};
+		  and time between #{arg1} and #{arg2};
 	</select>
+
+	<insert id="add" useGeneratedKeys="true" keyProperty="call_expense_id" parameterType="CallExpense">
+		INSERT INTO call_expenses (user_id, order_id, time, minutes, cost)
+		VALUES (#{userId}, #{orderId}, #{time}, #{minutes}, #{cost})
+	</insert>
 </mapper>

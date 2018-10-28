@@ -14,11 +14,9 @@ import java.time.LocalDateTime;
 public interface DataExpenseMapper {
 	DataExpense getById(int dataExpenseId);
 
-	double sumLocalDataInOrder(int orderId);
+	double sumDataInOrder(int orderId, boolean isLocal);
 
-	double sumNationalDataInOrder(int orderId);
+	double sumDataWithoutOrder(int userId, boolean isLocal, LocalDateTime startTime, LocalDateTime endTime);
 
-	double sumLocalDataWithoutOrder(int userId, LocalDateTime startTime, LocalDateTime endTime);
-
-	double sumNationalDataWithoutOrder(int userId, LocalDateTime startTime, LocalDateTime endTime);
+	int add(DataExpense dataExpense);
 }

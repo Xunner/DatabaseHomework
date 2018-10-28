@@ -84,4 +84,20 @@
 			<result property="isAbolished" column="is_abolished"/>
 		</association>
 	</resultMap>
+
+	<select id="getValidOrdersIdAndTotal" resultMap="validOrdersIdAndTotal">
+		select order_id, minutes, message, local_data, national_data
+		from orders, plans
+		where user_id = #{arg0}
+		  and orders.plan_id = plans.plan_id
+		  and state != 2
+		  and date between #{arg1} and #{arg2}
+	</select>
+	<resultMap id="validOrdersIdAndTotal" type="map">
+		<result property="orderId" column="order_id"/>
+		<result property="minutes" column="minutes"/>
+		<result property="message" column="message"/>
+		<result property="localData" column="local_data"/>
+		<result property="nationalData" column="national_data"/>
+	</resultMap>
 </mapper>

@@ -9,35 +9,24 @@
 		WHERE data_expense_id = #{dataExpenseId};
 	</select>
 
-	<select id="sumLocalDataInOrder" resultType="double">
+	<select id="sumDataInOrder" resultType="double">
 		SELECT ifnull(sum(data), 0)
 		FROM data_expenses
-		WHERE order_id = #{orderId}
-		  and is_local = 1;
+		WHERE order_id = #{arg0}
+		  and is_local = #{arg1};
 	</select>
 
-	<select id="sumNationalDataInOrder" resultType="double">
+	<select id="sumDataWithoutOrder" resultType="double">
 		SELECT ifnull(sum(data), 0)
 		FROM data_expenses
-		WHERE order_id = #{orderId}
-		  and is_local = 0;
-	</select>
-
-	<select id="sumLocalDataWithoutOrder" resultType="double">
-		SELECT ifnull(sum(data), 0)
-		FROM data_expenses
-		WHERE user_id = #{userId}
+		WHERE user_id = #{arg0}
 		  and order_id is null
-		  and is_local = 1
-		  and time between #{startTime} and #{endTime};
+		  and is_local = #{arg1}
+		  and time between #{arg2} and #{arg3};
 	</select>
 
-	<select id="sumNationalDataWithoutOrder" resultType="double">
-		SELECT ifnull(sum(data), 0)
-		FROM data_expenses
-		WHERE user_id = #{userId}
-		  and order_id is null
-		  and is_local = 0
-		  and time between #{startTime} and #{endTime};
-	</select>
+	<insert id="add" useGeneratedKeys="true" keyProperty="data_expense_id" parameterType="DataExpense">
+		INSERT INTO data_expenses (user_id, order_id, time, data, is_local, cost)
+		VALUES (#{userId}, #{orderId}, #{time}, #{data}, #{isLocal}, #{cost})
+	</insert>
 </mapper>

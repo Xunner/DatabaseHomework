@@ -18,8 +18,13 @@
 	<select id="countMessageWithoutOrder" resultType="int">
 		SELECT count(*)
 		FROM message_expenses
-		WHERE user_id = #{userId}
+		WHERE user_id = #{arg0}
 		  and order_id is null
-		  and time between #{startTime} and #{endTime};
+		  and time between #{arg1} and #{arg2};
 	</select>
+
+	<insert id="add" useGeneratedKeys="true" keyProperty="message_expense_id" parameterType="MessageExpense">
+		INSERT INTO message_expenses (user_id, order_id, time, cost)
+		VALUES (#{userId}, #{orderId}, #{time}, #{cost})
+	</insert>
 </mapper>

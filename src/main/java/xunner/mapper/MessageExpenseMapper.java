@@ -17,4 +17,6 @@ public interface MessageExpenseMapper {
 	int countMessagesInOrder(int orderId);
 
 	int countMessageWithoutOrder(int userId, LocalDateTime startTime, LocalDateTime endTime);
+
+	int add(MessageExpense messageExpense);
 }

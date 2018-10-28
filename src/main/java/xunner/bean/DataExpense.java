@@ -1,6 +1,7 @@
 package xunner.bean;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
  * @author 巽
  **/
 @Data
+@NoArgsConstructor
 public class DataExpense {
 	private int dataExpenseId;
 
@@ -32,4 +34,13 @@ public class DataExpense {
 
 	/** 资费（元） */
 	private double cost;
+
+	public DataExpense(int userId, Integer orderId, LocalDateTime time, double data, boolean isLocal, double cost) {
+		this.userId = userId;
+		this.orderId = orderId;
+		this.time = time;
+		this.data = data;
+		this.isLocal = isLocal;
+		this.cost = cost;
+	}
 }
