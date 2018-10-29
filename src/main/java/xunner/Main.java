@@ -37,10 +37,6 @@ public class Main {
 	private static SqlSessionFactory sqlSessionFactory;
 
 	public static void main(String[] args) {
-//		DataGenerator.generatePlans(sqlSessionFactory);
-//		DataGenerator.generateUsers(sqlSessionFactory);
-		DataGenerator.generateOrders(sqlSessionFactory);    // 11月数据在此生成
-		DataGenerator.generateExpenses(sqlSessionFactory, 1);    // 11月数据在此生成
 		long startTime;
 		double time;
 
@@ -48,57 +44,64 @@ public class Main {
 		startTime = System.currentTimeMillis();
 		subscribe(1, 1);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("订购用时：" + time + "秒");
+		System.out.println("1. 订购用时：" + time + "秒");
 		System.out.println();
 
 		// 2. 退订（立即生效）：unsubscribeByNow(订单id)
 		startTime = System.currentTimeMillis();
 		unsubscribeByNow(5);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("退订（立即生效）用时：" + time + "秒");
+		System.out.println("2. 退订（立即生效）用时：" + time + "秒");
 		System.out.println();
 
 		// 3. 退订（次月生效）：unsubscribeNextMonth(订单id)
 		startTime = System.currentTimeMillis();
 		unsubscribeNextMonth(6);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("退订（次月生效）用时：" + time + "秒");
+		System.out.println("3. 退订（次月生效）用时：" + time + "秒");
 		System.out.println();
 
 		// 4. 查询套餐订购记录：searchUserOrders(用户id，开始时间，结束时间)
 		startTime = System.currentTimeMillis();
 		searchUserOrders(1, LocalDate.of(2018, Month.JANUARY, 1), LocalDate.now());
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("查询套餐订购记录用时：" + time + "秒");
+		System.out.println("4. 查询套餐订购记录用时：" + time + "秒");
 		System.out.println();
 
 		// 5. 生成通话资费：generateCallExpense(用户id，通话时长/分钟)
 		startTime = System.currentTimeMillis();
 		generateCallExpense(1, 3.0);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("生成通话资费用时：" + time + "秒");
+		System.out.println("5. 生成通话资费用时：" + time + "秒");
 		System.out.println();
 
 		// 6. 生成短信资费：generateMessageExpense(用户id)
 		startTime = System.currentTimeMillis();
 		generateMessageExpense(1);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("生成短信资费用时：" + time + "秒");
+		System.out.println("6. 生成短信资费用时：" + time + "秒");
 		System.out.println();
 
 		// 7. 生成流量资费：generateDataExpense(用户id，流量大小/M，是否为本地流量)
 		startTime = System.currentTimeMillis();
 		generateDataExpense(1, 9.9, true);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("生成流量资费用时：" + time + "秒");
+		System.out.println("7. 生成流量资费用时：" + time + "秒");
 		System.out.println();
 
 		// 8. 生成当月账单：generateMonthlyBill(用户id)
 		startTime = System.currentTimeMillis();
 		generateMonthlyBill(1);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
-		System.out.println("生成月账单用时：" + time + "秒");
+		System.out.println("8. 生成月账单用时：" + time + "秒");
 		System.out.println();
+
+
+//		DataGenerator.generatePlans(sqlSessionFactory);
+//		DataGenerator.generateUsers(sqlSessionFactory);
+//		DataGenerator.generateOrders(sqlSessionFactory, LocalDate.now());
+//		DataGenerator.generateExpenses(sqlSessionFactory, 1, LocalDate.now());
+//		DataGenerator.generateDataOfNovember(sqlSessionFactory);
 	}
 
 	/**
@@ -449,6 +452,11 @@ public class Main {
 		try {
 			InputStream inputStream = Resources.getResourceAsStream(resource);
 			sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+			try(SqlSession session = sqlSessionFactory.openSession()) {
+				UserMapper userMapper = session.getMapper(UserMapper.class);
+				userMapper.getById(1);
+				session.commit();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

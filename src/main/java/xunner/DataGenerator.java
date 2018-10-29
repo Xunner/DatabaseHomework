@@ -8,7 +8,6 @@ import xunner.mapper.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
@@ -52,25 +51,25 @@ public class DataGenerator {
 		}
 	}
 
-	public static void generateOrders(SqlSessionFactory sqlSessionFactory) {
+	public static void generateOrders(SqlSessionFactory sqlSessionFactory, LocalDate date) {
 		try (SqlSession session = sqlSessionFactory.openSession()) {
 			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
 
-			orderMapper.add(new Order(1, 1, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 1, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 2, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 3, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 4, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 5, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 6, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(1, 7, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(2, 1, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(2, 3, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(2, 5, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(2, 7, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(3, 2, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(4, 3, LocalDate.now(), OrderState.EFFECTIVE));
-			orderMapper.add(new Order(5, 4, LocalDate.now(), OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 1, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 1, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 2, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 3, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 4, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 5, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 6, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(1, 7, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(2, 1, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(2, 3, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(2, 5, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(2, 7, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(3, 2, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(4, 3, date, OrderState.EFFECTIVE));
+			orderMapper.add(new Order(5, 4, date, OrderState.EFFECTIVE));
 			orderMapper.add(new Order(1, 3, LocalDate.of(2018, Month.SEPTEMBER, 1), OrderState.EFFECTIVE));
 			orderMapper.add(new Order(1, 5, LocalDate.of(2018, Month.SEPTEMBER, 1), OrderState.EFFECTIVE));
 			orderMapper.add(new Order(1, 7, LocalDate.of(2018, Month.SEPTEMBER, 1), OrderState.EFFECTIVE));
@@ -85,16 +84,15 @@ public class DataGenerator {
 		}
 	}
 
-	public static void generateExpenses(SqlSessionFactory sqlSessionFactory, int userId) {
+	public static void generateExpenses(SqlSessionFactory sqlSessionFactory, int userId, LocalDate date) {
 		try (SqlSession session = sqlSessionFactory.openSession()) {
 			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
 			CallExpenseMapper callExpenseMapper = session.getMapper(CallExpenseMapper.class);
 			DataExpenseMapper dataExpenseMapper = session.getMapper(DataExpenseMapper.class);
 			MessageExpenseMapper messageExpenseMapper = session.getMapper(MessageExpenseMapper.class);
 
-			LocalDate today = LocalDate.now();
-			LocalDate firstDayOfMonth = LocalDate.of(today.getYear(), today.getMonth(), 1);
-			LocalDate lastDayOfMonth = LocalDate.of(today.getYear(), today.getMonth(), today.getDayOfMonth());
+			LocalDate firstDayOfMonth = LocalDate.of(date.getYear(), date.getMonth(), 1);
+			LocalDate lastDayOfMonth = LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
 			LocalDateTime now = LocalDateTime.now();
 			List<Map<String, Object>> results = orderMapper.getValidOrdersIdAndTotal(userId, firstDayOfMonth, lastDayOfMonth);
 			Random rand = new Random();
@@ -138,7 +136,11 @@ public class DataGenerator {
 		}
 	}
 
+	/**
+	 *    11月数据在此生成
+	 */
 	public static void generateDataOfNovember(SqlSessionFactory sqlSessionFactory) {
-
+		DataGenerator.generateOrders(sqlSessionFactory, LocalDate.of(2018, Month.NOVEMBER, 10));
+		DataGenerator.generateExpenses(sqlSessionFactory, 1, LocalDate.of(2018, Month.NOVEMBER, 10));
 	}
 }
