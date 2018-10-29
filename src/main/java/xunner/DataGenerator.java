@@ -7,7 +7,12 @@ import xunner.enums.OrderState;
 import xunner.mapper.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * 数据生成
@@ -78,5 +83,62 @@ public class DataGenerator {
 
 			session.commit();
 		}
+	}
+
+	public static void generateExpenses(SqlSessionFactory sqlSessionFactory, int userId) {
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+			CallExpenseMapper callExpenseMapper = session.getMapper(CallExpenseMapper.class);
+			DataExpenseMapper dataExpenseMapper = session.getMapper(DataExpenseMapper.class);
+			MessageExpenseMapper messageExpenseMapper = session.getMapper(MessageExpenseMapper.class);
+
+			LocalDate today = LocalDate.now();
+			LocalDate firstDayOfMonth = LocalDate.of(today.getYear(), today.getMonth(), 1);
+			LocalDate lastDayOfMonth = LocalDate.of(today.getYear(), today.getMonth(), today.getDayOfMonth());
+			LocalDateTime now = LocalDateTime.now();
+			List<Map<String, Object>> results = orderMapper.getValidOrdersIdAndTotal(userId, firstDayOfMonth, lastDayOfMonth);
+			Random rand = new Random();
+			assert !results.isEmpty();
+			for (Map result : results) {
+				int orderId = (int) result.get("orderId");
+				int messagesLeft = (int) result.get("message") - messageExpenseMapper.countMessagesInOrder(orderId);
+				double minutesLeft = (double) result.get("minutes") - callExpenseMapper.sumMinutesInOrder(orderId);
+				double localDataLeft = (double) result.get("localData") - dataExpenseMapper.sumDataInOrder(orderId, true);
+				double nationalDataLeft = (double) result.get("nationalData") - dataExpenseMapper.sumDataInOrder(orderId, false);
+//				System.out.println(messagesLeft + ", " + minutesLeft + ", " + localDataLeft + ", " + nationalDataLeft);
+				if (messagesLeft > 0) {
+//					System.out.println(messagesLeft);
+					messageExpenseMapper.add(new MessageExpense(userId, orderId, now, 0));
+				}
+				if (minutesLeft > 0) {
+					double minutes = rand.nextDouble() * minutesLeft;
+//					System.out.println(minutesLeft + ", rand minutes:" + minutes);
+					callExpenseMapper.add(new CallExpense(userId, orderId, now, minutes, 0));
+				}
+				if (localDataLeft > 0) {
+					double localData = rand.nextDouble() * localDataLeft;
+//					System.out.println(localDataLeft + ", rand localData:" + localData);
+					dataExpenseMapper.add(new DataExpense(userId, orderId, now, localData, true, 0));
+				}
+				if (nationalDataLeft > 0) {
+					double nationalData = rand.nextDouble() * nationalDataLeft;
+//					System.out.println(nationalDataLeft + ", rand nationalData:" + nationalData);
+					dataExpenseMapper.add(new DataExpense(userId, orderId, now, nationalData, false, 0));
+				}
+			}
+
+			messageExpenseMapper.add(new MessageExpense(userId, null, now, 0.1));
+			callExpenseMapper.add(new CallExpense(userId, null, now, rand.nextDouble() * 10, 0));
+			double localData = rand.nextDouble() * 30;
+			dataExpenseMapper.add(new DataExpense(userId, null, now, localData, true, 2 * localData));
+			double nationalData = rand.nextDouble() * 20;
+			dataExpenseMapper.add(new DataExpense(userId, null, now, nationalData, false, 5 * nationalData));
+
+			session.commit();
+		}
+	}
+
+	public static void generateDataOfNovember(SqlSessionFactory sqlSessionFactory) {
+
 	}
 }

@@ -38,54 +38,54 @@
 
 ## 数据库ER图
 
-![ER Model](/img/ER.png)
+![ER Model](img/ER.png)
 
 ## 操作设计
 
 #### 1. 订购
 
 - 设计：
-- 运行截图：![订购](S:\JetBrains\Programs\DatabaseHomework\img\订购.png)
+- 运行截图：![订购](img/订购.png)
 - 时间：0.016s
 
 #### 2. 退订（立即生效）
 
 - 设计：
-- 运行截图：![立即退订](S:\JetBrains\Programs\DatabaseHomework\img\立即退订.png)
+- 运行截图：![立即退订](img/立即退订.png)
 - 时间：0.01s
 
 #### 3. 退订（次月生效）
 
 - 设计：
-- 运行截图：![次月退订](S:\JetBrains\Programs\DatabaseHomework\img\次月退订.png)
+- 运行截图：![次月退订](img/次月退订.png)
 - 时间：0.005s
 
 #### 4. 查询套餐订购记录
 
 - 设计：
-- 运行截图：![查询套餐订购记录](S:\JetBrains\Programs\DatabaseHomework\img\查询套餐订购记录.png)
+- 运行截图：![查询套餐订购记录](img/查询套餐订购记录.png)
 - 时间：0.013s
 
 #### 5. 生成通话资费
 
 - 设计：
-- 运行截图：![生成通话资费](S:\JetBrains\Programs\DatabaseHomework\img\生成通话资费.png)
+- 运行截图：![生成通话资费](img/生成通话资费.png)
 - 时间：0.021s
 
 #### 6. 生成短信资费
 
 - 设计：
-- 运行截图：![生成短信资费](S:\JetBrains\Programs\DatabaseHomework\img\生成短信资费.png)
+- 运行截图：![生成短信资费](img/生成短信资费.png)
 - 时间：0.019s
 
 #### 7. 生成流量资费
 
 - 设计：
-- 运行截图：![生成流量资费](S:\JetBrains\Programs\DatabaseHomework\img\生成流量资费.png)
+- 运行截图：![生成流量资费](img/生成流量资费.png)
 - 时间：0.015s
 
 #### 8. 生成当月账单
 
 - 设计：
-- 运行截图：![生成月账单](S:\JetBrains\Programs\DatabaseHomework\img\生成月账单.png)
+- 运行截图：![生成月账单](img/生成月账单.png)
 - 时间：0.043s

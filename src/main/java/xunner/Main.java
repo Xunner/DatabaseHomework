@@ -32,10 +32,15 @@ import java.util.Map;
  *
  * @author 巽
  **/
+@SuppressWarnings("SameParameterValue")
 public class Main {
 	private static SqlSessionFactory sqlSessionFactory;
 
 	public static void main(String[] args) {
+//		DataGenerator.generatePlans(sqlSessionFactory);
+//		DataGenerator.generateUsers(sqlSessionFactory);
+		DataGenerator.generateOrders(sqlSessionFactory);    // 11月数据在此生成
+		DataGenerator.generateExpenses(sqlSessionFactory, 1);    // 11月数据在此生成
 		long startTime;
 		double time;
 
@@ -44,52 +49,56 @@ public class Main {
 		subscribe(1, 1);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("订购用时：" + time + "秒");
+		System.out.println();
 
 		// 2. 退订（立即生效）：unsubscribeByNow(订单id)
 		startTime = System.currentTimeMillis();
-		unsubscribeByNow(3);
+		unsubscribeByNow(5);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("退订（立即生效）用时：" + time + "秒");
+		System.out.println();
 
 		// 3. 退订（次月生效）：unsubscribeNextMonth(订单id)
 		startTime = System.currentTimeMillis();
-		unsubscribeNextMonth(4);
+		unsubscribeNextMonth(6);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("退订（次月生效）用时：" + time + "秒");
+		System.out.println();
 
 		// 4. 查询套餐订购记录：searchUserOrders(用户id，开始时间，结束时间)
 		startTime = System.currentTimeMillis();
 		searchUserOrders(1, LocalDate.of(2018, Month.JANUARY, 1), LocalDate.now());
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("查询套餐订购记录用时：" + time + "秒");
+		System.out.println();
 
 		// 5. 生成通话资费：generateCallExpense(用户id，通话时长/分钟)
 		startTime = System.currentTimeMillis();
 		generateCallExpense(1, 3.0);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("生成通话资费用时：" + time + "秒");
+		System.out.println();
 
 		// 6. 生成短信资费：generateMessageExpense(用户id)
 		startTime = System.currentTimeMillis();
 		generateMessageExpense(1);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("生成短信资费用时：" + time + "秒");
+		System.out.println();
 
 		// 7. 生成流量资费：generateDataExpense(用户id，流量大小/M，是否为本地流量)
 		startTime = System.currentTimeMillis();
 		generateDataExpense(1, 9.9, true);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("生成流量资费用时：" + time + "秒");
+		System.out.println();
 
 		// 8. 生成当月账单：generateMonthlyBill(用户id)
 		startTime = System.currentTimeMillis();
 		generateMonthlyBill(1);
 		time = ((double) (System.currentTimeMillis() - startTime)) / 1000;
 		System.out.println("生成月账单用时：" + time + "秒");
-
-//		DataGenerator.generatePlans(sqlSessionFactory);
-//		DataGenerator.generateUsers(sqlSessionFactory);
-//		DataGenerator.generateOrders(sqlSessionFactory);
+		System.out.println();
 	}
 
 	/**
@@ -125,10 +134,10 @@ public class Main {
 
 				System.out.println("\t名称: " + plan.getName()
 						+ ", 价格: " + plan.getPrice()
-						+ (plan.getMinutes()==0 ? "" : ", 时长(剩/总): " + minutesLeft + "/" + plan.getMinutes())
-						+ (plan.getMessage()==0 ? "" : ", 短信(剩/总): " + messagesLeft + "/" + plan.getMessage())
-						+ (plan.getLocalData()==0 ? "" : ", 本地流量(剩/总): " + localDataLeft + "/" + plan.getLocalData())
-						+ (plan.getNationalData()==0 ? "" : ", 全国流量(剩/总): " + nationalDataLeft + "/" + plan.getNationalData())
+						+ (plan.getMinutes() == 0 ? "" : ", 时长(剩/总): " + String.format("%.2f", minutesLeft) + "/" + plan.getMinutes())
+						+ (plan.getMessage() == 0 ? "" : ", 短信(剩/总): " + messagesLeft + "/" + plan.getMessage())
+						+ (plan.getLocalData() == 0 ? "" : ", 本地流量(剩/总): " + String.format("%.2f", localDataLeft) + "/" + plan.getLocalData())
+						+ (plan.getNationalData() == 0 ? "" : ", 全国流量(剩/总): " + String.format("%.2f", nationalDataLeft) + "/" + plan.getNationalData())
 						+ ", 状态: " + state.getValue());
 			}
 			System.out.println();
@@ -141,10 +150,12 @@ public class Main {
 			double nationalData = dataExpenseMapper.sumDataWithoutOrder(userId, false, firstTimeOfMonth, lastTimeOfMonth);
 
 			// 套餐外通话0.5元/分钟，短信0.1元/条，本地流量2元/M，全国流量5元/M
-			System.out.println("套餐外通话时长：" + minutes + "分钟，共计" + (0.5 * minutes) + "元");
-			System.out.println("套餐外短信：" + message + "条，共计" + (0.1 * message) + "元");
-			System.out.println("套餐外本地流量：" + localData + "M，共计" + (2 * localData) + "元");
-			System.out.println("套餐外全国流量：" + nationalData + "M，共计" + (5 * nationalData) + "元");
+			sum += 0.5 * minutes + 0.1 * message + 2 * localData + 5 * nationalData;
+
+			System.out.println("套餐外通话时长：" + String.format("%.2f", minutes) + "分钟，共计" + String.format("%.2f", 0.5 * minutes) + "元");
+			System.out.println("套餐外短信：" + message + "条，共计" + String.format("%.2f", 0.1 * message) + "元");
+			System.out.println("套餐外本地流量：" + String.format("%.2f", localData) + "M，共计" + String.format("%.2f", 2 * localData) + "元");
+			System.out.println("套餐外全国流量：" + String.format("%.2f", nationalData) + "M，共计" + String.format("%.2f", 5 * nationalData) + "元");
 			System.out.println();
 			System.out.println("总计：" + sum + "元");
 			System.out.println("—————————————————————————————————————————————————————————————————————————————————");
@@ -208,8 +219,15 @@ public class Main {
 			}
 			if (left != 0) {
 				// 本地2元/M，全国5元/M
-				DataExpense dataExpense = new DataExpense(userId, null, LocalDateTime.now(), left, isLocal, (isLocal ? 2 : 5) * left);
+				double cost = (isLocal ? 2 : 5) * left;
+				DataExpense dataExpense = new DataExpense(userId, null, LocalDateTime.now(), left, isLocal, cost);
 				dataExpenseMapper.add(dataExpense);
+
+				// 扣钱
+				UserMapper userMapper = session.getMapper(UserMapper.class);
+				User user = userMapper.getById(userId);
+				user.setBalance(user.getBalance() - cost);
+				userMapper.update(user);
 
 				System.out.println("生成一笔流量资费：" + dataExpense);
 			}
@@ -251,6 +269,12 @@ public class Main {
 				// 0.1元/条
 				MessageExpense messageExpense = new MessageExpense(userId, null, LocalDateTime.now(), 0.1);
 				messageExpenseMapper.add(messageExpense);
+
+				// 扣钱
+				UserMapper userMapper = session.getMapper(UserMapper.class);
+				User user = userMapper.getById(userId);
+				user.setBalance(user.getBalance() - 0.1);
+				userMapper.update(user);
 
 				System.out.println("生成一笔短信资费：" + messageExpense);
 			}
@@ -294,8 +318,15 @@ public class Main {
 			}
 			if (left != 0) {
 				// 0.5元/分钟
-				CallExpense callExpense = new CallExpense(userId, null, LocalDateTime.now(), left, 0.5 * left);
+				double cost = 0.5 * left;
+				CallExpense callExpense = new CallExpense(userId, null, LocalDateTime.now(), left, cost);
 				callExpenseMapper.add(callExpense);
+
+				// 扣钱
+				UserMapper userMapper = session.getMapper(UserMapper.class);
+				User user = userMapper.getById(userId);
+				user.setBalance(user.getBalance() - cost);
+				userMapper.update(user);
 
 				System.out.println("生成一笔通话资费：" + callExpense);
 
