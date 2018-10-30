@@ -8,6 +8,7 @@ import xunner.mapper.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Random;
  *
  * @author 巽
  **/
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class DataGenerator {
 	public static void generatePlans(SqlSessionFactory sqlSessionFactory) {
 		try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -93,7 +95,7 @@ public class DataGenerator {
 
 			LocalDate firstDayOfMonth = LocalDate.of(date.getYear(), date.getMonth(), 1);
 			LocalDate lastDayOfMonth = LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
-			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime now = LocalDateTime.of(date, LocalTime.now());
 			List<Map<String, Object>> results = orderMapper.getValidOrdersIdAndTotal(userId, firstDayOfMonth, lastDayOfMonth);
 			Random rand = new Random();
 			assert !results.isEmpty();
@@ -137,7 +139,7 @@ public class DataGenerator {
 	}
 
 	/**
-	 *    11月数据在此生成
+	 * 11月数据在此生成
 	 */
 	public static void generateDataOfNovember(SqlSessionFactory sqlSessionFactory) {
 		DataGenerator.generateOrders(sqlSessionFactory, LocalDate.of(2018, Month.NOVEMBER, 10));
